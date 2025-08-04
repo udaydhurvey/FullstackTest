@@ -1,15 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../config/api";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login:", { email, password });
-   
+    const logindata = {
+      email: email,
+      password: password,
+    };
+    try {
+      const res = await api.post("/auth/login", logindata);
+      toast.success(res.data.message);
+      setPassword("");
+      setEmail("");
+      navigate("/userdashboard")
+    } catch (error) {
+      toast.error(
+        `Error : ${error.response?.status || error.message} | ${
+          error.response?.data.message || ""
+        }`
+      );
+    }
   };
 
   return (
